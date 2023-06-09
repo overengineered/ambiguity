@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "noEmit": false,
+    "target": "es6",
+    "module": "CommonJS",
+    "declaration": true,
+    "outDir": "./dist",
+    "inlineSources": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "exclude": ["__tests__"]
+}
