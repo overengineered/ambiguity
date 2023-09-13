@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "noEmit": false,
+    "noEmit": true,
     "target": "es6",
     "module": "CommonJS",
     "declaration": true,
@@ -9,6 +9,5 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
-  },
-  "exclude": ["__tests__"]
+  }
 }
