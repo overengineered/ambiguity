@@ -17,6 +17,11 @@ describe("ambiguity", () => {
     expect(result).toBe("1");
   });
 
+  it("should preserve null passed as value", () => {
+    const result = takeValue(null).merge("fallback");
+    expect(result).toBe(null);
+  });
+
   it("should apply flat transformation to value", () => {
     const result = takeValue(10).flatMap(divide100).merge(Infinity);
     expect(result).toEqual({ quotient: 10, remainder: 0 });
@@ -56,10 +61,38 @@ describe("ambiguity", () => {
     expect(errorInfo).toHaveBeenCalledWith(expect.any(Error));
   });
 
-  it("should provide error info on null", () => {
+  it("should blend as second when first is error", () => {
+    expect(
+      takeError<string>("E1")
+        .blend(takeValue("2"), () => "*")
+        .extract()
+    ).toBe("2");
+  });
+
+  it("should blend as first when second is error", () => {
+    expect(
+      takeValue("1")
+        .blend(takeError("E2"), () => "*")
+        .extract()
+    ).toBe("1");
+  });
+
+  it("should blend as combination when both contain values", () => {
+    expect(
+      takeValue("1")
+        .blend(takeValue("2"), (items) => items.join("&"))
+        .extract()
+    ).toBe("1&2");
+  });
+
+  it("should provide error info on undefined", () => {
     const errorInfo = jest.fn();
     takeNullable(undefined).useError(errorInfo);
     expect(errorInfo).toHaveBeenCalledWith(expect.any(Error));
+  });
+
+  it("should recover from null", () => {
+    expect(takeNullable(null).recoverAs(takeValue("1")).extract()).toBe("1");
   });
 
   it("should provide path info when accessing null field", () => {

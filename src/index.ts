@@ -4,6 +4,8 @@ export interface Maybe<T> {
   use: (inspect: (value: T) => void) => Maybe<T>;
   useError: (inspect: (value: Reportable) => void) => Maybe<T>;
   recover: (transform: (value: Reportable) => Maybe<T>) => Maybe<T>;
+  recoverAs: (result: Maybe<T>) => Maybe<T>;
+  blend: (other: Maybe<T>, combine: (both: [T, T]) => T) => Maybe<T>;
   merge: <X>(value: X) => T | X;
   extract: () => T;
 }
@@ -21,6 +23,9 @@ export function takeValue<T>(value: T): Maybe<T> {
     use: (inspect) => (inspect(value), result),
     useError: () => result,
     recover: () => result,
+    recoverAs: () => result,
+    blend: (other, combine) =>
+      other.map((alt) => combine([value, alt])).recoverAs(result),
     merge: () => value,
     extract: () => value,
   };
@@ -36,6 +41,8 @@ export function takeError<T = never>(info: ReportInfo): Maybe<T> {
     use: () => result,
     useError: (inspect) => (inspect(reportable), result),
     recover: (transform) => transform(reportable),
+    recoverAs: (result) => result,
+    blend: (other) => other,
     merge: (value) => value,
     extract: () => {
       throw reportable;
